@@ -964,6 +964,78 @@
             transform: translateY(-5px) scale(1.1);
         }
 
+        /* Notification Styles */
+        .notification {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            padding: 20px 25px;
+            border-radius: 12px;
+            background: #4CAF50;
+            color: white;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            opacity: 0;
+            transform: translateX(100%);
+            transition: all 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+            z-index: 10000;
+            max-width: 400px;
+            pointer-events: none;
+        }
+
+        .notification.show {
+            opacity: 1;
+            transform: translateX(0);
+            pointer-events: auto;
+        }
+
+        .notification.error {
+            background: #f44336;
+        }
+
+        .notification.warning {
+            background: #ff9800;
+        }
+
+        .notification i {
+            font-size: 24px;
+            flex-shrink: 0;
+        }
+
+        .notification-content {
+            flex: 1;
+        }
+
+        .notification-title {
+            font-weight: 600;
+            margin-bottom: 5px;
+            font-size: 16px;
+        }
+
+        .notification-message {
+            font-size: 14px;
+            opacity: 0.9;
+            line-height: 1.4;
+        }
+
+        .notification-close {
+            background: none;
+            border: none;
+            color: white;
+            font-size: 16px;
+            cursor: pointer;
+            opacity: 0.7;
+            transition: opacity 0.3s;
+            padding: 5px;
+            margin-left: 10px;
+        }
+
+        .notification-close:hover {
+            opacity: 1;
+        }
+
         /* Responsive */
         @media (max-width: 1200px) {
             .process-steps {
@@ -1078,6 +1150,12 @@
 
             .step {
                 min-width: 100%;
+            }
+
+            .notification {
+                max-width: calc(100% - 60px);
+                right: 30px;
+                left: 30px;
             }
         }
     </style>
@@ -1529,6 +1607,49 @@
             }
         });
 
+        // Notification Function
+        function showNotification(title, message, type = 'success', duration = 5000) {
+            const notification = document.createElement('div');
+            notification.className = `notification ${type}`;
+
+            const icon = type === 'success'
+                ? '<i class="fas fa-check-circle"></i>'
+                : type === 'error'
+                    ? '<i class="fas fa-exclamation-circle"></i>'
+                    : '<i class="fas fa-info-circle"></i>';
+
+            notification.innerHTML = `
+                ${icon}
+                <div class="notification-content">
+                    <div class="notification-title">${title}</div>
+                    <div class="notification-message">${message}</div>
+                </div>
+                <button class="notification-close">&times;</button>
+            `;
+
+            document.body.appendChild(notification);
+
+            // Показываем уведомление с анимацией
+            setTimeout(() => notification.classList.add('show'), 10);
+
+            // Закрытие по клику
+            const closeBtn = notification.querySelector('.notification-close');
+            closeBtn.addEventListener('click', () => {
+                notification.classList.remove('show');
+                setTimeout(() => notification.remove(), 300);
+            });
+
+            // Автоматическое закрытие
+            if (duration > 0) {
+                setTimeout(() => {
+                    notification.classList.remove('show');
+                    setTimeout(() => notification.remove(), 300);
+                }, duration);
+            }
+
+            return notification;
+        }
+
         // Telegram Bot Form Submission
         const orderForm = document.getElementById('orderForm');
         if (orderForm) {
@@ -1579,8 +1700,12 @@
                     const data = await response.json();
 
                     if (data.ok) {
-                        // Show success message
-                        alert(`Спасибо, ${formData.name}! Ваша заявка принята. Мы свяжемся с вами в ближайшее время по телефону ${formData.phone}.`);
+                        // Show success notification
+                        showNotification(
+                            'Заявка отправлена!',
+                            `Спасибо, ${formData.name}! Мы свяжемся с вами в ближайшее время по телефону ${formData.phone}.`,
+                            'success'
+                        );
 
                         // Reset form
                         orderForm.reset();
@@ -1589,7 +1714,13 @@
                     }
                 } catch (error) {
                     console.error('Error:', error);
-                    alert('Произошла ошибка при отправке заявки. Пожалуйста, позвоните нам по телефону +7 (937) 163-38-83.');
+                    // Show error notification
+                    showNotification(
+                        'Ошибка отправки',
+                        'Произошла ошибка при отправке заявки. Пожалуйста, позвоните нам по телефону +7 (937) 163-38-83.',
+                        'error',
+                        8000
+                    );
                 } finally {
                     // Restore button state
                     submitBtn.innerHTML = originalBtnText;
