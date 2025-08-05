@@ -1158,13 +1158,23 @@
                 left: 30px;
             }
         }
+        .custom-logo {
+            width: 50px; /* Размер логотипа */
+            height: 50px;
+            margin-right: 5px;
+            object-fit: contain;
+        }
     </style>
 </head>
 <body>
     <!-- Header -->
     <header id="header">
         <div class="container header-container">
-            <a href="#" class="logo"><i class="fas fa-language"></i>Альтера<span>Уфа</span></a>
+            <!-- Заменяем иконку на кастомное изображение логотипа -->
+            <a href="#" class="logo">
+                <img src="https://i.postimg.cc/c4Wwmm6p/photo-5229178337522482865-y-1.jpg" alt="Логотип Альтера" class="custom-logo">
+                Альтера<span>Уфа</span>
+            </a>
             <button class="mobile-menu-btn" id="mobileMenuBtn">
                 <i class="fas fa-bars"></i>
             </button>
