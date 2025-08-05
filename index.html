@@ -9,6 +9,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700&family=Playfair+Display:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
+        
         :root {
             --primary: #2563eb;
             --secondary: #1e40af;
@@ -1485,7 +1486,7 @@
                 </div>
             </div>
 
-            <div class="contact-form">
+                        <div class="contact-form">
                 <h3>Оставить заявку</h3>
                 <form id="orderForm">
                     <div class="form-group">
@@ -1511,6 +1512,15 @@
                     <div class="form-group">
                         <label for="message">Сообщение</label>
                         <textarea id="message" class="form-control" placeholder="Опишите ваш заказ, укажите язык перевода, сроки и другие детали"></textarea>
+                    </div>
+                    <div class="form-group" style="margin-bottom: 20px;">
+                        <div style="display: flex; align-items: flex-start;">
+                            <input type="checkbox" id="privacyAgreement" required style="margin-right: 10px; margin-top: 3px;">
+                            <label for="privacyAgreement" style="font-size: 13px; color: #64748b; cursor: pointer;">
+                                Я согласен(а) на обработку моих персональных данных в соответствии с
+                                <a href="#" onclick="document.getElementById('privacyModal').style.display='block'; return false;" style="color: var(--primary); text-decoration: none;">Политикой конфиденциальности</a>
+                            </label>
+                        </div>
                     </div>
                     <button type="submit" class="btn submit-btn">Отправить заявку <i class="fas fa-paper-plane"></i></button>
                 </form>
@@ -1727,6 +1737,16 @@
         if (orderForm) {
             orderForm.addEventListener('submit', async function(e) {
                 e.preventDefault();
+
+                 if (!document.getElementById('privacyAgreement').checked) {
+                    showNotification(
+                        'Требуется согласие',
+                        'Пожалуйста, подтвердите согласие на обработку персональных данных',
+                        'warning',
+                        5000
+                    );
+                    return;
+                }
 
                 // Get form data
                 const formData = {
